@@ -1,0 +1,6 @@
+<nav search_view="search" color="#000000">
+  <view name="passivetotal" default='true' />
+  <view name="search" />
+  <a href="mailto:feedback@passivetotal.org">Contact Us</a>
+  <a href="https://www.passivetotal.org/enterprise">Request an Enterprise Setup</a>
+</nav>

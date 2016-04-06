@@ -1,0 +1,10 @@
+.error-response {
+    background-color: #c64e4e;
+    color: #fff;
+    padding: 10px;
+    display: inline-block;
+}
+
+.pull-right {
+    float: right;
+}

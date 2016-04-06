@@ -1,0 +1,13 @@
+<setup>
+  <block title="PassiveTotal Setup" endpoint="configs/conf-passivetotal" entity="api-setup">
+    <text>Register for your free API key at https://www.passivetotal.org/register</text>
+    <input field="username">
+      <label>Username (email used to login)</label>
+      <type>text</type>
+    </input>
+    <input field="apikey">
+      <label>API Key</label>
+      <type>text</type>
+    </input>
+  </block>
+</setup>

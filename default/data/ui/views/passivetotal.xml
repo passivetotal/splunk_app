@@ -1,0 +1,204 @@
+<form script="passivetotal.js" stylesheet="passivetotal.css">
+  <label>PassiveTotal</label>
+  <search id="enrichmentQuery">
+    <query>|ptenrich query="$pt_query_value$" |rangemap field=classification low=1-1 elevated=2-2 severe=3-3 default=gray</query>
+  </search>
+  <search id="historyQuery">
+    <query>|pthistory | rename dt AS "Datetime", username AS "Username", focus AS "Focus", source AS "Source"</query>
+  </search>
+  <search id="pdnsQuery">
+    <query>|ptpdns query="$pt_query_value$" earliest=`toEpoch("$dashboard_time.earliest$")` latest=`toEpoch("$dashboard_time.latest$")` | fillnull VALUE="N/A" | rename firstSeen AS "First Seen", lastSeen AS "Last Seen", resolve AS "Resolution", source AS Sources</query>
+  </search>
+  <search id="uniqueQuery">
+    <query>|ptupdns query="$pt_query_value$" earliest=`toEpoch("$dashboard_time.earliest$")` latest=`toEpoch("$dashboard_time.latest$")` | fillnull VALUE="N/A" | rename resolve AS "Resolution", count AS Count</query>
+  </search>
+  <search id="sslQuery">
+    <query>|ptssl query="$pt_query_value$" earliest=`toEpoch("$dashboard_time.earliest$")` latest=`toEpoch("$dashboard_time.latest$")` | fillnull VALUE="N/A" | rename firstSeen AS "First Seen", lastSeen AS "Last Seen", sha1 AS "SHA-1", resolve AS "IP Address"</query>
+  </search>
+  <search id="whoisQuery">
+    <query>|ptwhois query="$pt_query_value$" earliest=`toEpoch("$dashboard_time.earliest$")` latest=`toEpoch("$dashboard_time.latest$")` | fillnull VALUE="N/A" | rename key AS "Key", value AS "Value"</query>
+  </search>
+  <search id="trackerQuery">
+    <query>|pttrackers query="$pt_query_value$" earliest=`toEpoch("$dashboard_time.earliest$")` latest=`toEpoch("$dashboard_time.latest$")` | fillnull VALUE="N/A" | rename hostname AS "Resolution", firstSeen AS "First Seen", lastSeen AS "Last Seen", attributeType AS "Type", attributeValue AS "Value"</query>
+  </search>
+
+  <fieldset autorun="false" submitButton="true" searchWhenChanged="false">
+    <html depends="$pt_query_value$">
+      <h1><a class="pull-right" target="_blank" href="https://www.passivetotal.org/passive/$pt_query_value$">View in PassiveTotal</a></h1>
+    </html>
+    <input type="time" token="dashboard_time" searchWhenChanged="false">
+      <label>Select a time range</label>
+      <default>
+        <earliest>0</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input id="ipOrDomainInput" type="text" token="pt_query_value" searchWhenChanged="true">
+      <label>Enter an IP or Domain Name</label>
+      <default>$pt_query_value$</default>
+      <initialValue>$pt_query_value$</initialValue>
+    </input>
+  </fieldset>
+
+  <row>
+    <panel depends="$pt_query_value$">
+      <single id="enrichmentTags">
+        <search base="enrichmentQuery">
+          <query></query>
+        </search>
+        <title>Tags</title>
+        <option name="field">tags</option>
+        <option name="classField">range</option>
+      </single>
+    </panel>
+    <panel depends="$pt_query_value$">
+      <single id="pdnsResultCount">
+        <search base="pdnsQuery">
+          <query></query>
+        </search>
+        <title>Passive DNS Count</title>
+        <option name="field">count</option>
+        <option name="afterLabel">records</option>
+      </single>
+    </panel>
+    <panel depends="$pt_query_value$">
+      <single id="eventResultsCount">
+        <search>
+          <query>$pt_query_value$ | stats count</query>
+        </search>
+        <title>Matching Events</title>
+        <option name="field">count</option>
+        <option name="afterLabel">events</option>
+      </single>
+    </panel>
+  </row>
+
+  <row>
+    <panel depends="$pt_query_value$">
+      <table id="pdnsUniqueResultsTable">
+        <title>Unique Resolutions</title>
+        <search base="uniqueQuery">
+          <query></query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="fields">*</option>
+        <option name="link.visible">false</option>
+        <fields>["Resolution", "Count"]</fields>
+      </table>
+    </panel>
+    <panel depends="$pt_query_value$">
+      <table id="pdnsResultsTable">
+        <title>Passive DNS Results</title>
+        <search base="pdnsQuery">
+          <query></query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="fields">*</option>
+        <option name="link.openSearch.visible">true</option>
+        <option name="link.openPivot.visible">true</option>
+        <option name="link.inspectSearch.visible">true</option>
+        <option name="link.exportResults.visible">false</option>
+        <fields>["First Seen", "Last Seen", "Resolution", "Sources"]</fields>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel depends="$pt_query_value$">
+      <event>
+        <title>Recent 250 Matching Events</title>
+        <searchString>$pt_query_value$ | head 250</searchString>
+        <fields>added deleted changed</fields>
+        <option name="showPager">true</option>
+        <option name="count">10</option>
+        <option name="displayRowNumbers">false</option>
+      </event>
+    </panel>
+  </row>
+
+  <row>
+    <panel depends="$pt_query_value$">
+      <table id="whoisResultsTable">
+        <title>WHOIS Results</title>
+        <search base="whoisQuery">
+          <query></query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">20</option>
+        <option name="fields">*</option>
+        <fields>["Key", "Value"]</fields>
+      </table>
+    </panel>
+    <panel depends="$pt_query_value$, $pt_has_trackers$">
+      <table id="trackerResultsTable">
+        <title>Tracker Results</title>
+        <search base="trackerQuery">
+          <query></query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">20</option>
+        <option name="fields">*</option>
+        <fields>["Resolution", "First Seen", "Last Seen", "Type", "Value"]</fields>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel depends="$pt_query_value$, $pt_has_ssl$">
+      <table id="sslResultsTable">
+        <title>Passive SSL Results</title>
+        <search base="sslQuery">
+          <query></query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="fields">*</option>
+        <fields>["First Seen", "Last Seen", "IP Address", "SHA-1"]</fields>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel depends="$pt_welcome$">
+      <html>
+        <h1>Welcome,</h1>
+        <p>PassiveTotal for Splunk brings the power of datasets collected from Internet scanning directly to your Splunk instance. This application leverages your existing PassiveTotal account and our API in order to bring in data like passive DNS, WHOIS, passive SSL, host attributes and more.</p>
+        <p>To get started, search for a domain or IP address in the above bar or click on one of the entries from your account history. The app will automatically search your local events and provide you with all the contextual information you need to aid in your investigation.</p>
+        <p>This app is designed for PassiveTotal enterprise customers due to the larger query volume. Not an enterprise customer yet? Click the "Request an enterprise trial" button on the top navigation and fill out the form! If you have any other comments or feedback, reach out to use directly at feedback@passivetotal.org.</p>
+        <p>- The PassiveTotal Team</p>
+      </html>
+    </panel>
+    <panel depends="$pt_welcome$">
+      <table id="accountResultsTable">
+        <title>Your History</title>
+        <search base="historyQuery">
+          <query></query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="fields">*</option>
+        <fields>["Datetime", "Username", "Focus", "Source"]</fields>
+      </table>
+    </panel>
+  </row>
+</form>
