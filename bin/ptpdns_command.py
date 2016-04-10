@@ -37,7 +37,6 @@ try:
             end = datetime.datetime.fromtimestamp(int(latest))
         kwords['end'] = end.strftime("%Y-%m-%d")
     kwords['query'] = query_value
-    kwords['headers'] = build_headers()
 
     logger.info("Query target: %s" % query_value)
     logger.debug("Raw options: %s" % str(options))
@@ -47,7 +46,7 @@ try:
     api_key = configuration.get('apikey', None)
 
     output_events = list()
-    pdns = DnsRequest(username, api_key).get_passive_dns(**kwords)
+    pdns = DnsRequest(username, api_key, headers=build_headers()).get_passive_dns(**kwords)
     if 'error' in pdns:
         raise Exception("Whoa there, looks like you reached your quota for today! Please come back tomorrow to resume your investigation or contact support for details on enterprise plans.")
     for result in pdns.get("results", []):

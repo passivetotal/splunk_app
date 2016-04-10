@@ -24,8 +24,8 @@ try:
     api_key = configuration.get('apikey', None)
 
     output_events = list()
-    whois = WhoisRequest(username, api_key).get_whois_details(
-        query=query_value, compact_record=True, headers=build_headers())
+    whois = WhoisRequest(username, api_key, headers=build_headers()).get_whois_details(
+        query=query_value, compact_record=True)
     if 'error' in whois:
         raise Exception("Whoa there, looks like you reached your quota for today! Please come back tomorrow to resume your investigation or contact support for details on enterprise plans.")
     fields = ['contactEmail', 'nameServers', 'registered', 'registryUpdatedAt',

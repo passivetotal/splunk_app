@@ -23,8 +23,8 @@ try:
     api_key = configuration.get('apikey', None)
 
     output_events = list()
-    ssl = SslRequest(username, api_key).get_ssl_certificate_history(
-        query=query_value, headers=build_headers())
+    ssl = SslRequest(username, api_key, headers=build_headers()).get_ssl_certificate_history(
+        query=query_value)
     if 'error' in ssl:
         raise Exception("Whoa there, looks like you reached your quota for today! Please come back tomorrow to resume your investigation or contact support for details on enterprise plans.")
     for result in ssl.get("results", []):

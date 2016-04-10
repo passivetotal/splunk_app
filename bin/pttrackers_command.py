@@ -23,8 +23,8 @@ try:
     api_key = configuration.get('apikey', None)
 
     output_events = []
-    tmp = AttributeRequest(username, api_key).get_host_attribute_trackers(
-        query=query_value, headers=build_headers())
+    tmp = AttributeRequest(username, api_key, headers=build_headers()).get_host_attribute_trackers(
+        query=query_value)
     if 'error' in tmp:
         raise Exception("Whoa there, looks like you reached your quota for today! Please come back tomorrow to resume your investigation or contact support for details on enterprise plans.")
     for result in tmp.get("results", []):
