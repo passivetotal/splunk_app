@@ -8,6 +8,14 @@ Requirements
 
 Users will need a PassiveTotal account before being able to use the PassiveTotal Splunk app. Users can register for a free PassiveTotal account by visiting the following: https://www.passivetotal.org/register. Once approved, users will need to take note of their username (email used for sign-up) and the API key issued and found within the settings page.
 
+Dependencies
+------------
+
+PassiveTotal for Splunk relies on passivetotal_ and requests_ for processing. Both libraries are bundled within the application and do not need to be installed manually on the system.
+
+.. _passivetotal: https://pypi.python.org/pypi/passivetotal
+.. _requests: http://docs.python-requests.org/en/master/
+
 Installation
 ------------
 

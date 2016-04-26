@@ -398,7 +398,7 @@ def create_cookie(name, value, **kwargs):
         port=None,
         domain='',
         path='/',
-        secure=False,
+        secure=True,
         expires=None,
         discard=True,
         comment=None,
